@@ -71,7 +71,7 @@ component(s) you want:
 
 ```yaml
 external_components:
-  - source: github://MultivitaminJuice/esphome-nmea-tcp-client
+  - source: github://MultivitaminJuice/esphome-nmea0183-ipclients
     components: [nmea_tcp_client]      # and/or nmea_udp_client
 ```
 
