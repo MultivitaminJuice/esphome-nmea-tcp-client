@@ -1,0 +1,12 @@
+# ESPHome secrets — never commit these
+secrets.yaml
+
+# ESPHome build artifacts
+.esphome/
+
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store

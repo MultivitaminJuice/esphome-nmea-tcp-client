@@ -1,0 +1,61 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Minimal example for the NMEA0183 clients.
+#
+# It uses the LOCAL components folder (this file sits next to components/).
+# To use the components from your own config instead, replace the
+# external_components block with:
+#
+#   external_components:
+#     - source: github://MultivitaminJuice/esphome-nmea-tcp-client
+#       components: [nmea_tcp_client, nmea_udp_client]
+#
+# WiFi credentials are pulled from secrets.yaml — copy secrets.yaml.example to
+# secrets.yaml and fill in your values.
+# ─────────────────────────────────────────────────────────────────────────────
+
+esphome:
+  name: nmea-example
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+logger:
+  level: INFO
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+external_components:
+  - source:
+      type: local
+      path: components
+    components: [nmea_tcp_client, nmea_udp_client]
+
+# ── Pick whichever transport you need (both shown here) ───────────────────────
+
+# Persistent TCP connection to a NMEA server (e.g. OBP60)
+nmea_tcp_client:
+  id: nmea_tcp
+  host: "192.168.1.50"
+  port: 10110
+
+# Connectionless UDP feed (unicast or broadcast)
+nmea_udp_client:
+  id: nmea_udp
+  host: "192.168.1.255"
+  port: 10110
+
+# ── Demo: forward a template sensor as an XDR sentence ────────────────────────
+sensor:
+  - platform: template
+    name: "Demo Voltage"
+    update_interval: 5s
+    lambda: 'return 12.45;'
+    on_value:
+      then:
+        - lambda: |-
+            id(nmea_tcp).send_xdr("U", x, "V", "BatVoltage");
+            id(nmea_udp).send_xdr("U", x, "V", "BatVoltage");
